@@ -5,3 +5,4 @@
 include(${YARP_MODULE_DIR}/YarpDeviceParamsParserGenerator.cmake)
 
 add_subdirectory(ttsDevice)
+add_subdirectory(whisperDevice)
