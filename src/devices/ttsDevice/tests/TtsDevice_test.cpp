@@ -13,9 +13,9 @@
 using namespace yarp::dev;
 using namespace yarp::os;
 
-TEST_CASE("dev::deviceTemplate_test", "[yarp::dev]")
+TEST_CASE("dev::ttsDevice_test", "[yarp::dev]")
 {
-    YARP_REQUIRE_PLUGIN("deviceTemplate", "device");
+    YARP_REQUIRE_PLUGIN("ttsDevice", "device");
 
     Network::setLocalMode(true);
 
@@ -26,7 +26,7 @@ TEST_CASE("dev::deviceTemplate_test", "[yarp::dev]")
         //"Checking opening device"
         {
             Property pcfg;
-            pcfg.put("device", "deviceTemplate");
+            pcfg.put("device", "ttsDevice");
             REQUIRE(dd.open(pcfg));
         }
 

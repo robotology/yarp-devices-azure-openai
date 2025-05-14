@@ -1,4 +1,4 @@
-![YARP logo](doc/images/yarp-robot-24.png?raw=true "yarp-device-template")
+![YARP logo](doc/images/yarp-robot-24.png?raw=true "yarp-devices-azure-openai")
 Yarp device for xxx
 =====================
 
@@ -31,7 +31,7 @@ CI Status
 
 :construction: This repository is currently work in progress. :construction:
 
-[![Build Status](https://github.com/robotology/yarp-device-template/workflows/CI%20Workflow/badge.svg)](https://github.com/robotology/yarp-device-template/actions?query=workflow%3A%22CI+Workflow%22)
+[![Build Status](https://github.com/robotology/yarp-devices-azure-openai/workflows/CI%20Workflow/badge.svg)](https://github.com/robotology/yarp-devices-azure-openai/actions?query=workflow%3A%22CI+Workflow%22)
 
 License
 ---------
@@ -44,4 +44,4 @@ This repository is maintained by:
 
 | | |
 |:---:|:---:|
-| [<img src="https://github.com/randaz81.png" width="40">](https://github.com/randaz81) | [@randaz81](https://github.com/randaz81) |
+| [<img src="https://github.com/elandini84.png" width="40">](https://github.com/elandini84) | [@elandini84](https://github.com/elandini84) |
