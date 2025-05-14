@@ -1,8 +1,8 @@
 ![YARP logo](doc/images/yarp-robot-24.png?raw=true "yarp-devices-azure-openai")
-Yarp device for xxx
+Yarp devices for speech transcription and synthesis using Azure OpenAI APIs
 =====================
 
-This repository contains the YARP plugin for xxx.
+This repository contains the YARP plugins for speech transcription and synthesis using Azure OpenAI APIs
 
 :construction: This repository is currently work in progress. :construction:
 :construction: The software contained is this repository is currently under testing. :construction: APIs may change without any warning. :construction: This code should be not used before its first official release :construction:
@@ -16,6 +16,14 @@ Documentation of the individual devices is provided in the official Yarp documen
 
 Installation
 -------------
+
+### Dependencies
+Apart from `YARP` the repo depends only from `curl`
+
+On `Ubuntu`
+~~~
+sudo apt install curl
+~~~
 
 ### Build with pure CMake commands
 
