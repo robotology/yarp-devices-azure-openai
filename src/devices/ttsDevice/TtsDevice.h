@@ -9,6 +9,8 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechSynthesizer.h>
 #include <curl/curl.h>
+#include <vector>
+#include <algorithm>
 #include <yarp/os/all.h>
 #include <yarp/sig/Sound.h>
 #include <iomanip> // for std::setw, std::hex, std::setfill
@@ -25,6 +27,14 @@
  *  Parameters required by this device are described in class TtsDevice_ParamsParser
  *
  */
+
+const std::vector<std::string> VOICES{
+    "alloy",
+    "echo",
+    "fable",
+    "nova",
+    "onyx",
+    "shimmer"};
 
 class TtsDevice :
         public yarp::dev::DeviceDriver,
@@ -55,10 +65,13 @@ public:
     yarp::dev::ReturnValue synthesize(const std::string& text, yarp::sig::Sound& sound) override;
 
 private:
-    std::string m_voiceName;
+    std::string m_voiceName{VOICES[3]};
     std::string m_url;
     std::string m_apiKey;
     struct curl_slist *headers{nullptr};
+    static size_t _writeCallback(void *contents, size_t size, size_t nmemb, std::vector<uint8_t> *output);
+    std::string _escapeJsonString(const std::string &input);
+    bool _voiceNameIsValid(const std::string& voice_name);
 };
 
 #endif // YARP_TTSDEVICE_H
