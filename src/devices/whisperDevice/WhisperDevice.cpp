@@ -81,9 +81,10 @@ ReturnValue WhisperDevice::getLanguage(std::string& language)
 
 ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string& transcription, double& score)
 {
+    score = 0.0;
     CURL *curl = curl_easy_init();
     if (!curl) {
-        std::cerr << "Failed to initialize cURL" << std::endl;
+        yCError(WHISPERDEVICE) << "Failed to initialize cURL";
         return yarp::dev::ReturnValue::return_code::return_value_error_generic;
     }
     struct curl_slist *headers = NULL;
@@ -109,6 +110,10 @@ ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string
                  CURLFORM_BUFFERLENGTH, audioData.size(),
                  CURLFORM_CONTENTTYPE, "audio/wav",
                  CURLFORM_END);
+    curl_formadd(&post, &last,
+                 CURLFORM_COPYNAME, "response_format",
+                 CURLFORM_COPYCONTENTS, "verbose_json",
+                 CURLFORM_END);
 
     std::string response;
     curl_easy_setopt(curl, CURLOPT_URL, m_url.c_str());
@@ -119,9 +124,9 @@ ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string
 
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-        std::cerr << "cURL request failed: " << curl_easy_strerror(res) << std::endl;
+        yCError(WHISPERDEVICE) << "cURL request failed: " << curl_easy_strerror(res);
     } else {
-        std::cout << "Transcription response: " << response << std::endl;
+        yCDebug(WHISPERDEVICE) << "Transcription response: " << response;
     }
 
     // Parse the JSON response
@@ -130,11 +135,25 @@ ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string
         if (jsonResponse.contains("text")) {
             transcription = jsonResponse["text"].get<std::string>();
         } else {
-            std::cerr << "No 'text' field in the response" << std::endl;
+            yCError(WHISPERDEVICE) << "No 'text' field in the response";
             return ReturnValue::return_code::return_value_error_generic;
         }
+        if (jsonResponse.contains("segments") && !jsonResponse["segments"].empty()) {
+            if (jsonResponse["segments"][0].contains("avg_logprob") && jsonResponse["segments"][0].contains("no_speech_prob")) {
+                score = std::exp(jsonResponse["segments"][0]["avg_logprob"].get<double>()) * (1.0 - jsonResponse["segments"][0]["no_speech_prob"].get<double>());
+            } else {
+                yCWarning(WHISPERDEVICE) << "No 'avg_logprob' or 'no_speech_prob' field in the first segment, setting score to 0.0";
+                score = 1.0;
+            }
+        } else if (jsonResponse.contains("confidence")) {
+            score = jsonResponse["confidence"].get<double>();
+
+        } else {
+            yCWarning(WHISPERDEVICE) << "No 'confidence' field in the response, setting score to 0.0";
+            score = 0.0;
+        }
     } catch (const nlohmann::json::parse_error& e) {
-        std::cerr << "JSON parse error: " << e.what() << std::endl;
+        yCError(WHISPERDEVICE) << "JSON parse error: " << e.what();
         return ReturnValue::return_code::return_value_error_generic;
     }
 
