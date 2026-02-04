@@ -101,24 +101,21 @@ ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string
         audioData.push_back((sample >> 8) & 0xFF);
     }
 
-    struct curl_httppost *post = NULL;
-    struct curl_httppost *last = NULL;
-    curl_formadd(&post, &last,
-                 CURLFORM_COPYNAME, "file",
-                 CURLFORM_BUFFER, "audio.wav",
-                 CURLFORM_BUFFERPTR, audioData.data(),
-                 CURLFORM_BUFFERLENGTH, audioData.size(),
-                 CURLFORM_CONTENTTYPE, "audio/wav",
-                 CURLFORM_END);
-    curl_formadd(&post, &last,
-                 CURLFORM_COPYNAME, "response_format",
-                 CURLFORM_COPYCONTENTS, "verbose_json",
-                 CURLFORM_END);
+    curl_mime *mime = curl_mime_init(curl);
+    curl_mimepart *part = curl_mime_addpart(mime);
+    curl_mime_name(part, "file");
+    curl_mime_data(part, (const char*)audioData.data(), audioData.size());
+    curl_mime_filename(part, "audio.wav");
+    curl_mime_type(part, "audio/wav");
+
+    part = curl_mime_addpart(mime);
+    curl_mime_name(part, "response_format");
+    curl_mime_data(part, "verbose_json", CURL_ZERO_TERMINATED);
 
     std::string response;
     curl_easy_setopt(curl, CURLOPT_URL, m_url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+    curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
@@ -158,7 +155,7 @@ ReturnValue WhisperDevice::transcribe(const yarp::sig::Sound& sound, std::string
     }
 
     curl_easy_cleanup(curl);
-    curl_formfree(post);
+    curl_mime_free(mime);
     curl_slist_free_all(headers);
 
     return ReturnValue::return_code::return_value_ok;
