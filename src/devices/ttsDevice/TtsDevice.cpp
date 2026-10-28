@@ -103,6 +103,15 @@ ReturnValue TtsDevice::getVoice(std::string& voice_name)
     return ReturnValue_ok;
 }
 
+ReturnValue TtsDevice::getAvailableVoices(yarp::sig::VectorOfString& voices)
+{
+    voices.clear();
+    for (const auto& voice : VOICES) {
+        voices.push_back(voice);
+    }
+    return ReturnValue_ok;
+}
+
 ReturnValue TtsDevice::setSpeed(const double speed)
 {
     yCWarning(TTSDEVICE) << "setSpeed not implemented";

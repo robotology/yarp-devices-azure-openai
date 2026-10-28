@@ -28,7 +28,7 @@
  *
  */
 
-const std::vector<std::string> VOICES{
+const yarp::sig::VectorOfString VOICES{
     "alloy",
     "echo",
     "fable",
@@ -58,6 +58,7 @@ public:
     yarp::dev::ReturnValue getLanguage(std::string& language) override;
     yarp::dev::ReturnValue setVoice(const std::string& voice_name = "auto") override;
     yarp::dev::ReturnValue getVoice(std::string& voice_name) override;
+    yarp::dev::ReturnValue getAvailableVoices(yarp::sig::VectorOfString& voices) override;
     yarp::dev::ReturnValue setSpeed(const double speed=0) override;
     yarp::dev::ReturnValue getSpeed(double& speed) override;
     yarp::dev::ReturnValue setPitch(const double pitch) override;
